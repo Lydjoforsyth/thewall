@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>CodingDojo Wall</title>
+</head>
+<body>
+    <style>
+        .wrapper {
+            margin-bottom: 100px;
+        }
+        .btn.btn-primary.single {
+            background-color: lightskyblue !important; 
+        }
+    </style>
+    <div class="wrapper container"></div>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <div class="row">
+                <h1 class="col p-4 bg m-1">CodingDojo Wall</h1>
+                <h1 class="col p-4 bg m-1">Welcome, {{logged_user.first_name}}!</h1>
+                <a  class="col p-4 bg m-1" href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="wrapper container">
+        <form action='/message' method='POST'>
+            <div class="form-group">
+            {% csrf_token %}
+            <label for="InputPostMessage">Post a message:</label>
+            <textarea id="InputPostMessage" class="form-control" name='message' placeholder="what's up?" cols="30" rows="5"></textarea> 
+            </div>
+            <button type="submit" class="btn btn-primary">Post a message</button>
+        </form>
+    </div> 
+    <div class="wrapper container">
+        {% for message in all_messages %}
+            <h4>{{message.creator.first_name}} - <small>{{message.created_at|date:"SHORT_DATE_FORMAT"}}</small></h4>
+            <p>"{{message.message}}"</p>
+            <form action="/comment" method="post">
+                <div class="form-group">
+                {% csrf_token %}
+                <input type="hidden" name="message_id" value="{{message.id}}">
+                <label for="Comment1">Post a comment:</label>
+                <input type="text" class="form-control" id="Comment1" name='comment_content' aria-describedby="titleHelp">
+                </div>
+                <button type="submit" class="btn btn-primary">Post a comment</button>
+            </form>
+            <div class="wrapper container">
+                {% for comment in message.has_comments.all reversed %}
+                <h4>{{comment.creator.first_name}} - <small>{{comment.created_at|date:"F jS Y"}}</small></h4>
+                <p>"{{ comment.comment }}"</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
+          
